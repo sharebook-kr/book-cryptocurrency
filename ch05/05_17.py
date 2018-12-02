@@ -1,16 +1,13 @@
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5 import uic
+import pybithumb
 
-form_class = uic.loadUiType("bull.ui")[0]
+btc = pybithumb.get_ohlcv("BTC")
+close = btc['close']
+ma5 = close.rolling(5).mean()
+last_ma5 = ma5[-2]
 
-class MyWindow(QMainWindow, form_class):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
+cur_price = pybithumb.get_current_price('BTC')
 
-
-app = QApplication(sys.argv)
-win = MyWindow()
-win.show()
-app.exec_()
+if cur_price > last_ma5:
+    print("상승장")
+else:
+    print("하락장")

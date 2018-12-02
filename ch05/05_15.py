@@ -1,12 +1,7 @@
 import pybithumb
 
-df = pybithumb.get_ohlcv("BTC")
-ma5 = df['close'].rolling(window=5).mean()
-
-price = pybithumb.get_current_price("BTC")
-last_ma5 = ma5[-2]
-
-if price > last_ma5:
-    print("상승장")
-else:
-    print("하락장")
+btc = pybithumb.get_ohlcv("BTC")
+close = btc['close']
+print((close[0] + close[1] + close[2] + close[3] + close[4])/5)
+print((close[1] + close[2] + close[3] + close[4] + close[5])/5)
+print((close[2] + close[3] + close[4] + close[5] + close[6])/5)

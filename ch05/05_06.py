@@ -1,4 +1,4 @@
-import  pybithumb
+import pybithumb
 
 orderbook = pybithumb.get_orderbook("BTC")
 print(orderbook)

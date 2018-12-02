@@ -1,27 +1,16 @@
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5 import uic
-from PyQt5.QtCore import *
+import pybithumb
 
-tickers = ["BTC", "ETH", "BCH", "ETC"]
-form_class = uic.loadUiType("bull.ui")[0]
+def bull_market(ticker):
+    df = pybithumb.get_ohlcv(ticker)
+    ma5 = df['close'].rolling(5).mean()
+    last_ma5 = ma5[-2]
+    cur_price = pybithumb.get_current_price(ticker)
 
-class MyWindow(QMainWindow, form_class):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
+    if cur_price > last_ma5:
+        return True
+    else:
+        return False
 
-        self.tableWidget.setRowCount(len(tickers))
-        timer = QTimer(self)
-        timer.start(5000)
-        timer.timeout.connect(self.timeout)
-
-    def timeout(self):
-        for i, ticker in enumerate(tickers):
-            ticker_item = QTableWidgetItem(ticker)
-            self.tableWidget.setItem(i, 0, ticker_item)
-
-app = QApplication(sys.argv)
-win = MyWindow()
-win.show()
-app.exec_()
+is_bull = bull_market("BTC")
+if is_bull:
+    print("비트코인 상승장")
