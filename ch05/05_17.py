@@ -1,8 +1,7 @@
 import pybithumb
 
-btc = pybithumb.get_ohlcv("BTC")
-close = btc['close']
-ma5 = close.rolling(5).mean()
+df = pybithumb.get_ohlcv("BTC")
+ma5 = df['close'].rolling(window=5).mean()
 last_ma5 = ma5[-2]
 
 cur_price = pybithumb.get_current_price('BTC')

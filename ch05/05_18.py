@@ -1,13 +1,16 @@
 import pybithumb
 
-btc = pybithumb.get_ohlcv("BTC")
-close = btc['close']
-ma5 = close.rolling(5).mean()
-last_ma5 = ma5[-2]
+def bull_market(ticker):
+    df = pybithumb.get_ohlcv(ticker)
+    ma5 = df['close'].rolling(5).mean()
+    last_ma5 = ma5[-2]
+    cur_price = pybithumb.get_current_price(ticker)
 
-cur_price = pybithumb.get_current_price('BTC')
+    if cur_price > last_ma5:
+        return True
+    else:
+        return False
 
-if cur_price > last_ma5:
-    print("상승장")
-else:
-    print("하락장")
+is_bull = bull_market("BTC")
+if is_bull:
+    print("비트코인 상승장")

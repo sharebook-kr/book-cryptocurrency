@@ -11,6 +11,12 @@ def bull_market(ticker):
     else:
         return False
 
-is_bull = bull_market("BTC")
-if is_bull:
-    print("비트코인 상승장")
+tickers = pybithumb.get_tickers()
+for ticker in tickers:
+    is_bull = bull_market(ticker)
+    if is_bull:
+        print(ticker, " 상승장")
+    else:
+        print(ticker, " 하락장")
+
+

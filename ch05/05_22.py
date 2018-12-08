@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtCore import *
 
+tickers = ["BTC", "ETH", "BCH", "ETC"]
 form_class = uic.loadUiType("bull.ui")[0]
 
 class MyWindow(QMainWindow, form_class):
@@ -15,7 +16,10 @@ class MyWindow(QMainWindow, form_class):
         timer.timeout.connect(self.timeout)
 
     def timeout(self):
-        print("5초에요")
+        for i, ticker in enumerate(tickers):
+            item = QTableWidgetItem(ticker)
+            self.tableWidget.setItem(i, 0, item)
+
 
 app = QApplication(sys.argv)
 window = MyWindow()

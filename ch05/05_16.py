@@ -3,5 +3,6 @@ import pybithumb
 btc = pybithumb.get_ohlcv("BTC")
 close = btc['close']
 
-ma5 = close.rolling(5).mean()
+window = close.rolling(5)
+ma5 = window.mean()
 print(ma5)
