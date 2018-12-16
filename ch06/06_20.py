@@ -29,8 +29,15 @@ def sell_crypto_currency(ticker):
     unit = bithumb.get_balance(ticker)[0]
     bithumb.sell_market_order(ticker, unit)
 
+def get_yesterday_ma5(ticker):
+    df = pybithumb.get_ohlcv(ticker)
+    close = df['close']
+    ma = close.rolling(5).mean()
+    return ma[-2]
+
 now = datetime.now()
 mid = datetime(now.year, now.month, now.day + 1)
+ma5 = get_yesterday_ma5("BTC")
 target_price = get_target_price("BTC")
 
 while True:
@@ -39,11 +46,12 @@ while True:
         if mid < now < mid + datetime.delta(seconds=10): 
             target_price = get_target_price("BTC")
             mid = datetime(now.year, now.month, now.day + 1)
+            ma5 = get_yesterday_ma5("BTC")
             sell_crypto_currency("BTC")
     
-        current_price = pybithumb.get_current_price("BTC")
-        if current_price > target_price:
-            buy_crypto_currency("BTC")
+        current_price = pybithumb.get_current_price("BTC")        
+        if (current_price > target_price) and (current_price > ma5):
+            buy_crypto_currency("BTC")        
     except:
         print("에러 발생")        
     time.sleep(1)
