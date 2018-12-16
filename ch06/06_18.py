@@ -9,18 +9,18 @@ with open("bithumb.txt") as f:
     bithumb = pybithumb.Bithumb(key, secret)
 
 def get_target_price():
-	try:
-		df = pybithumb.get_ohlcv("BTC")
-		yesterday = df.iloc[-2]
+    try:
+        df = pybithumb.get_ohlcv("BTC")
+        yesterday = df.iloc[-2]
 
-		today_open = yesterday['close']
-		yesterday_high = yesterday['high']
-		yesterday_low = yesterday['low']
-		target = today_open + (yesterday_high - yesterday_low) * 0.5
-		return target
-	except:
-		return None
-		
+        today_open = yesterday['close']
+        yesterday_high = yesterday['high']
+        yesterday_low = yesterday['low']
+        target = today_open + (yesterday_high - yesterday_low) * 0.5
+        return target
+    except:
+        return None
+
 def try_buy(price, target):
     try:
         krw = bithumb.get_balance("BTC")[2]
@@ -43,17 +43,15 @@ def try_sell():
         bithumb.sell_market_order("BTC", unit)
     except:
         print("try sell error")
-	
-	
+
 now = datetime.now()
 mid = datetime(now.year, now.month, now.day + 1)
 target_price = get_target_price()
 
 while True:
     now = datetime.now()
-    if mid < now < mid + datetime.delta(seconds=10): 
+    if mid < now < mid + datetime.delta(seconds=10):
         target_price = get_target_price()
-        now = datetime.now()
         mid = datetime(now.year, now.month, now.day + 1)
         try_sell()
         time.sleep(10)
@@ -61,5 +59,5 @@ while True:
     current_price = pybithumb.get_current_price("BTC")
     if current_price is not None:
         try_buy(current_price, target_price)
-			    	
+
     time.sleep(1)

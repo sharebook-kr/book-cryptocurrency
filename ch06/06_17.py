@@ -24,15 +24,14 @@ while True:
     now = datetime.now()
     if mid < now < mid + datetime.delta(seconds=10): 
         target_price = get_target_price()
-        now = datetime.now()
         mid = datetime(now.year, now.month, now.day + 1)
 
-	current_price = pybithumb.get_current_price("BTC")
-	if current_price is not None and current_price > target:
-		krw = bithumb.get_balance("BTC")[2]
-		orderbook = pybithumb.get_orderbook("BTC")		
-		sell_price = orderbook['asks'][0]['price']  # 최우선 매도호가
-		unit = krw/float(sell_price)
-		bithumb.buy_market_order("BTC", unit)
-			    	
+    current_price = pybithumb.get_current_price("BTC")
+    if current_price is not None and current_price > target:
+        krw = bithumb.get_balance("BTC")[2]
+        orderbook = pybithumb.get_orderbook("BTC")
+        sell_price = orderbook['asks'][0]['price']  # 최우선 매도호가
+        unit = krw/float(sell_price)
+        bithumb.buy_market_order("BTC", unit)
+
     time.sleep(1)
