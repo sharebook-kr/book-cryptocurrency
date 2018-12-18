@@ -36,7 +36,7 @@ def get_yesterday_ma5(ticker):
     return ma[-2]
 
 now = datetime.now()
-mid = datetime(now.year, now.month, now.day + 1)
+mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
 ma5 = get_yesterday_ma5("BTC")
 target_price = get_target_price("BTC")
 
@@ -45,7 +45,7 @@ while True:
         now = datetime.now()
         if mid < now < mid + datetime.delta(seconds=10): 
             target_price = get_target_price("BTC")
-            mid = datetime(now.year, now.month, now.day + 1)
+            mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
             ma5 = get_yesterday_ma5("BTC")
             sell_crypto_currency("BTC")
     

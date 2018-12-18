@@ -28,14 +28,14 @@ def sell_crypto_currency(ticker):
     bithumb.sell_market_order(ticker, unit)
 
 now = datetime.now()
-mid = datetime(now.year, now.month, now.day + 1)
+mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
 target_price = get_target_price("BTC")
 
 while True:
     now = datetime.now()
     if mid < now < mid + datetime.delta(seconds=10): 
         target_price = get_target_price("BTC")
-        mid = datetime(now.year, now.month, now.day + 1)
+        mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
         sell_crypto_currency("BTC")
 
     current_price = pybithumb.get_current_price("BTC")
