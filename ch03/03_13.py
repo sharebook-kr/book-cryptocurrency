@@ -1,21 +1,9 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5 import uic
 
-form_class = uic.loadUiType("window.ui")[0]
+app = QApplication(sys.argv)         
 
+btn = QPushButton("Hello")    # 버튼 객체 생성
+btn.show()
 
-class MyWindow(QMainWindow, form_class):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.pushButton.clicked.connect(self.inquiry)
-
-    def inquiry(self):
-        print("조회 버튼 클릭")
-
-
-app = QApplication(sys.argv)
-window = MyWindow()
-window.show()
-app.exec_()
+app.exec_()                   # 이벤트 루프 생성

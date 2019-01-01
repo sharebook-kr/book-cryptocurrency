@@ -3,9 +3,7 @@ class Parent:
         print("sing a song")
 
 class LuckyChild(Parent):
-    def dance(self):
-        print("shuffle dance")
-
+    pass
+	
 luckyboy = LuckyChild()
 luckyboy.sing()
-luckyboy.dance()

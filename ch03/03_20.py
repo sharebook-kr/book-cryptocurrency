@@ -1,13 +1,16 @@
 import sys
 from PyQt5.QtWidgets import *
-
-
-class MyWindow(QMainWindow):
+from PyQt5 import uic
+ 
+form_class = uic.loadUiType("mywindow.ui")[0]
+ 
+ 
+class MyWindow(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
-        self.setGeometry(100, 200, 300, 400)
-
-
+        self.setupUi(self)
+ 
+ 
 app = QApplication(sys.argv)
 window = MyWindow()
 window.show()

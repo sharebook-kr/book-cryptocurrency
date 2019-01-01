@@ -1,27 +1,16 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5 import uic
-from PyQt5.QtCore import *
-import pykorbit
-
-form_class = uic.loadUiType("window2.ui")[0]
+from PyQt5.QtGui import *
 
 
-class MyWindow(QMainWindow, form_class):
+class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
+        self.setGeometry(100, 200, 300, 200)
+        self.setWindowTitle("PyQt")
+        self.setWindowIcon(QIcon("icon.png"))
 
-        self.timer = QTimer(self)
-        self.timer.start(1000)
-        self.timer.timeout.connect(self.inquiry)
-
-    def inquiry(self):
-        cur_time = QTime.currentTime()
-        str_time = cur_time.toString("hh:mm:ss")
-        self.statusBar().showMessage(str_time)
-        price = pykorbit.get_current_price("BTC")
-        self.lineEdit.setText(str(price))
+        btn = QPushButton("버튼1", self)
 
 
 app = QApplication(sys.argv)
