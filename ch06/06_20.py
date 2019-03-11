@@ -1,6 +1,6 @@
 import time
 import pybithumb
-from datetime import datetime
+import datetime
 
 with open("bithumb.txt") as f:
     lines = f.readlines()
@@ -35,17 +35,17 @@ def get_yesterday_ma5(ticker):
     ma = close.rolling(5).mean()
     return ma[-2]
 
-now = datetime.now()
-mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
+now = datetime.datetime.now()
+mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
 ma5 = get_yesterday_ma5("BTC")
 target_price = get_target_price("BTC")
 
 while True:
     try:
-        now = datetime.now()
+        now = datetime.datetime.now()
         if mid < now < mid + datetime.delta(seconds=10): 
             target_price = get_target_price("BTC")
-            mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
+            mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
             ma5 = get_yesterday_ma5("BTC")
             sell_crypto_currency("BTC")
     

@@ -1,6 +1,6 @@
 import time
 import pybithumb
-from datetime import datetime
+import datetime
 
 with open("bithumb.txt") as f:
     lines = f.readlines()
@@ -29,16 +29,16 @@ def sell_crypto_currency(ticker):
     unit = bithumb.get_balance(ticker)[0]
     bithumb.sell_market_order(ticker, unit)
 
-now = datetime.now()
-mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
+now = datetime.datetime.now()
+mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
 target_price = get_target_price("BTC")
 
 while True:
     try:
-        now = datetime.now()
+        now = datetime.datetime.now()
         if mid < now < mid + datetime.delta(seconds=10): 
             target_price = get_target_price("BTC")
-            mid = datetime(now.year, now.month, now.day) + datetime.timedelt(1)
+            mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
             sell_crypto_currency("BTC")
     
         current_price = pybithumb.get_current_price("BTC")
