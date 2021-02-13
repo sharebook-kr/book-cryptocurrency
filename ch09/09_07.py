@@ -5,9 +5,9 @@ import json
 async def bithumb_ws_client():
     uri = "wss://pubwss.bithumb.com/pub/ws"
 
-    async with websockets.connect(uri) as websocket:
-        #greeting = await websocket.recv()
-        #print(greeting)
+    async with websockets.connect(uri, ping_interval=None) as websocket:
+        greeting = await websocket.recv()
+        print(greeting)
 
         subscribe_fmt = {
             "type":"ticker", 
@@ -18,9 +18,13 @@ async def bithumb_ws_client():
         await websocket.send(subscribe_data)
 
         while True:
-            data = await websocket.recv()
-            data = json.loads(data)
-            print(data)
+            try:
+                data = await websocket.recv()
+                data = json.loads(data)
+                print(data)
+            except:
+                print("error occured")
+                pass
 
 
 async def main():
