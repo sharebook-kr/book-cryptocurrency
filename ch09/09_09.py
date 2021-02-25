@@ -1,24 +1,18 @@
-# Korbit Websocket Subscribe Example
 import websockets
 import asyncio 
 import json
-import datetime 
-import pprint
 
-async def korbit_ws_client():
-    uri = "wss://ws.korbit.co.kr/v1/user/push"
+async def bithumb_ws_client():
+    uri = "wss://pubwss.bithumb.com/pub/ws"
 
-    async with websockets.connect(uri) as websocket:
-        now = datetime.datetime.now()
-        timestamp = int(now.timestamp() * 1000)
+    async with websockets.connect(uri, ping_interval=None) as websocket:
+        greeting = await websocket.recv()
+        print(greeting)
 
         subscribe_fmt = {
-            "accessToken": None, 
-            "timestamp": timestamp, 
-            "event": "korbit:subscribe",
-            "data": {
-                "channels": ["ticker:btc_krw"]
-            }
+            "type":"ticker", 
+            "symbols": ["BTC_KRW"], 
+            "tickTypes": ["1H"]
         }
         subscribe_data = json.dumps(subscribe_fmt)
         await websocket.send(subscribe_data)
@@ -26,10 +20,10 @@ async def korbit_ws_client():
         while True:
             data = await websocket.recv()
             data = json.loads(data)
-            pprint.pprint(data)
+            print(data)
 
 
 async def main():
-    await korbit_ws_client()
+    await bithumb_ws_client()
 
 asyncio.run(main())

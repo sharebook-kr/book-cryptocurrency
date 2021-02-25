@@ -1,14 +1,7 @@
-import websockets
-import asyncio 
+import multiprocessing as mp 
 
-async def bithumb_ws_client():
-    uri = "wss://pubwss.bithumb.com/pub/ws"
 
-    async with websockets.connect(uri) as websocket: 
-        greeting = await websocket.recv() 
-        print(greeting)
-
-async def main():
-    await bithumb_ws_client()
-
-asyncio.run(main())
+if __name__ == "__main__":
+    proc = mp.current_process()
+    print(proc.name)
+    print(proc.pid)

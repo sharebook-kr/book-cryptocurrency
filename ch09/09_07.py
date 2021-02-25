@@ -1,33 +1,22 @@
-import websockets
-import asyncio 
-import json
+import multiprocessing as mp
+import time
 
-async def bithumb_ws_client():
-    uri = "wss://pubwss.bithumb.com/pub/ws"
-
-    async with websockets.connect(uri, ping_interval=None) as websocket:
-        greeting = await websocket.recv()
-        print(greeting)
-
-        subscribe_fmt = {
-            "type":"ticker", 
-            "symbols": ["BTC_KRW"], 
-            "tickTypes": ["1H"]
-        }
-        subscribe_data = json.dumps(subscribe_fmt)
-        await websocket.send(subscribe_data)
-
-        while True:
-            try:
-                data = await websocket.recv()
-                data = json.loads(data)
-                print(data)
-            except:
-                print("error occured")
-                pass
+def worker():
+    proc = mp.current_process()
+    print(proc.name)
+    print(proc.pid)
+    time.sleep(5)
+    print("SubProcess End")
 
 
-async def main():
-    await bithumb_ws_client()
+if __name__ == "__main__":
+    # main process
+    proc = mp.current_process()
+    print(proc.name)
+    print(proc.pid)
 
-asyncio.run(main())
+    # process spawning
+    p = mp.Process(name="SubProcess", target=worker)
+    p.start()
+
+    print("MainProcess End")

@@ -3,20 +3,23 @@ import websockets
 import asyncio 
 import json
 import sys
-import datetime
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 
-async def bithumb_ws_client(q):
-    uri = "wss://pubwss.bithumb.com/pub/ws"
+async def upbit_ws_client(q):
+    uri = "wss://api.upbit.com/websocket/v1"
 
-    async with websockets.connect(uri, ping_interval=None) as websocket:
-        subscribe_fmt = {
-            "type":"ticker", 
-            "symbols": ["BTC_KRW"], 
-            "tickTypes": ["1H"]
-        }
+    async with websockets.connect(uri) as websocket:
+        subscribe_fmt = [ 
+            {"ticket":"test"},
+            {
+                "type": "ticker",
+                "codes":["KRW-BTC"],
+                "isOnlyRealtime": True
+            },
+            {"format":"SIMPLE"}
+        ]
         subscribe_data = json.dumps(subscribe_fmt)
         await websocket.send(subscribe_data)
 
@@ -26,7 +29,7 @@ async def bithumb_ws_client(q):
             q.put(data)
 
 async def main(q):
-    await bithumb_ws_client(q)
+    await upbit_ws_client(q)
 
 def producer(q):
     asyncio.run(main(q))
@@ -49,7 +52,7 @@ class MyWindow(QMainWindow):
     def __init__(self, q):
         super().__init__()
         self.setGeometry(200, 200, 400, 200)
-        self.setWindowTitle("Bithumb Websocket with PyQt")
+        self.setWindowTitle("Upbit Websocket")
 
         # thread for data consumer
         self.consumer = Consumer(q)
@@ -67,13 +70,8 @@ class MyWindow(QMainWindow):
 
     @pyqtSlot(dict)
     def print_data(self, data):
-        content = data.get('content')
-        if content is not None:
-            current_price = int(content.get('closePrice'))
-            self.line_edit.setText(format(current_price, ",d"))
-
-        now = datetime.datetime.now()
-        self.statusBar().showMessage(str(now))
+        current_price = int(data.get('tp'))
+        self.line_edit.setText(format(current_price, ",d"))
 
 
 if __name__ == "__main__":

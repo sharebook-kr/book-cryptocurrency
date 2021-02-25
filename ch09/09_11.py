@@ -1,30 +1,50 @@
-import websockets
-import asyncio 
-import json
+from pybithumb import WebSocketManager
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
+import time
 
-async def upbit_ws_client():
-    uri = "wss://api.upbit.com/websocket/v1"
 
-    async with websockets.connect(uri) as websocket:
-        subscribe_fmt = [ 
-            {"ticket":"test"},
-            {
-                "type": "ticker",
-                "codes":["KRW-BTC"],
-                "isOnlyRealtime": True
-            },
-            {"format":"SIMPLE"}
-        ]
-        subscribe_data = json.dumps(subscribe_fmt)
-        await websocket.send(subscribe_data)
-
+class Worker(QThread):
+    recv = pyqtSignal(str)
+    def run(self):
+        # create websocket for Bithumb
+        wm = WebSocketManager("ticker", ["BTC_KRW"])
         while True:
-            data = await websocket.recv()
-            data = json.loads(data)
-            print(data)
+            data = wm.get()
+            self.recv.emit(data['content']['closePrice'])
 
 
-async def main():
-    await upbit_ws_client()
+class MyWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-asyncio.run(main())
+        label = QLabel("BTC", self)
+        label.move(20, 20)
+
+        self.price = QLabel("-", self)
+        self.price.move(80, 20)
+        self.price.resize(100, 20)
+
+        button = QPushButton("Start", self)
+        button.move(20, 50)
+        button.clicked.connect(self.click_btn)
+
+        self.th = Worker()
+        self.th.recv.connect(self.receive_msg)
+
+    @pyqtSlot(str)
+    def receive_msg(self, msg):
+        print(msg)
+        self.price.setText(msg)
+
+    def click_btn(self):
+       self.th.start()
+
+
+if __name__ == '__main__':
+   app = QApplication(sys.argv)
+   mywindow = MyWindow()
+   mywindow.show()
+   app.exec_()

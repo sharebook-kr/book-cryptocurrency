@@ -2,20 +2,26 @@ import multiprocessing as mp
 import websockets
 import asyncio 
 import json
-import sys
 import datetime
+import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import threading
 
+async def korbit_ws_client(q):
+    uri = "wss://ws.korbit.co.kr/v1/user/push"
 
-async def bithumb_ws_client(q):
-    uri = "wss://pubwss.bithumb.com/pub/ws"
+    async with websockets.connect(uri) as websocket:
+        now = datetime.datetime.now()
+        timestamp = int(now.timestamp() * 1000)
 
-    async with websockets.connect(uri, ping_interval=None) as websocket:
         subscribe_fmt = {
-            "type":"ticker", 
-            "symbols": ["BTC_KRW"], 
-            "tickTypes": ["1H"]
+            "accessToken": None, 
+            "timestamp": timestamp, 
+            "event": "korbit:subscribe",
+            "data": {
+                "channels": ["ticker:btc_krw"]
+            }
         }
         subscribe_data = json.dumps(subscribe_fmt)
         await websocket.send(subscribe_data)
@@ -26,9 +32,12 @@ async def bithumb_ws_client(q):
             q.put(data)
 
 async def main(q):
-    await bithumb_ws_client(q)
+    await korbit_ws_client(q)
 
 def producer(q):
+    proc = mp.current_process()
+    print("producer's Process: ", proc.name)
+    print("producer's Thread : ", threading.currentThread().getName())
     asyncio.run(main(q))
 
 class Consumer(QThread):
@@ -39,6 +48,10 @@ class Consumer(QThread):
         self.q = q
 
     def run(self):
+        proc = mp.current_process()
+        print("consumer's Process: ", proc.name)
+        print("consumer's Thread : ", threading.currentThread().getName())
+
         while True:
             if not self.q.empty():
                 data = q.get()
@@ -49,9 +62,13 @@ class MyWindow(QMainWindow):
     def __init__(self, q):
         super().__init__()
         self.setGeometry(200, 200, 400, 200)
-        self.setWindowTitle("Bithumb Websocket with PyQt")
+        self.setWindowTitle("Korbit Websocket")
 
         # thread for data consumer
+        proc = mp.current_process()
+        print("windows's Process: ", proc.name)
+        print("windows's Thread : ", threading.currentThread().getName())
+
         self.consumer = Consumer(q)
         self.consumer.poped.connect(self.print_data)
         self.consumer.start()
@@ -67,12 +84,15 @@ class MyWindow(QMainWindow):
 
     @pyqtSlot(dict)
     def print_data(self, data):
-        content = data.get('content')
-        if content is not None:
-            current_price = int(content.get('closePrice'))
+        timestamp = data.get('timestamp')
+        data_dict = data.get('data')
+        last = data_dict.get('last')
+
+        if last is not None:
+            current_price = int(last)
             self.line_edit.setText(format(current_price, ",d"))
 
-        now = datetime.datetime.now()
+        now = datetime.datetime.fromtimestamp(int(timestamp)/1000)
         self.statusBar().showMessage(str(now))
 
 
