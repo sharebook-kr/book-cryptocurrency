@@ -3,8 +3,8 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget
 
 class OverviewWidget(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None, ticker="BTC"):
+        super().__init__(parent)
         uic.loadUi("resource/overview.ui", self)
 
 if __name__ == "__main__":

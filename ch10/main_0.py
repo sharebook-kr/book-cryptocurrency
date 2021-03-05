@@ -8,6 +8,7 @@ class MainWindow(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Home Trading System")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

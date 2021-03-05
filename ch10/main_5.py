@@ -8,7 +8,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from volatility import *
 
 class VolatilityWorker(QThread):
-    tradingSent = pyqtSignal(tuple)
+    tradingSent = pyqtSignal(str, str, str)
 
     def __init__(self, ticker, bithumb):
         super().__init__()
@@ -37,7 +37,8 @@ class VolatilityWorker(QThread):
                     timestamp = result['data']['order_date']
                     dt = datetime.datetime.fromtimestamp( int(int(timestamp)/1000000) )
                     tstring = dt.strftime("%Y/%m/%d %H:%M:%S")
-                    self.tradingSent.emit(tstring, "매수", result['data']['order_qty'])
+                    self.tradingSent.emit(tstring, "매도", result['data']['order_qty'])
+                    wait_flag = False
 
                 if wait_flag == False:
                     current_price = pybithumb.get_current_price(self.ticker)
@@ -47,10 +48,10 @@ class VolatilityWorker(QThread):
                         timestamp = result['data']['order_date']
                         dt = datetime.datetime.fromtimestamp( int(int(timestamp)/1000000) )
                         tstring = dt.strftime("%Y/%m/%d %H:%M:%S")
-                        self.tradingSent.emit(tstring, "매도", result['data']['order_qty'])
+                        self.tradingSent.emit(tstring, "매수", result['data']['order_qty'])
                         wait_flag = True
             except:
-                print("에러 발생")
+                pass
             time.sleep(1)
     # ------------------------------------------
 
@@ -65,6 +66,7 @@ class MainWindow(QMainWindow, form_class):
         self.setupUi(self)
         self.ticker = "BTC"
         self.button.clicked.connect(self.clickBtn)
+        self.setWindowTitle("Home Trading System")
 
         with open("bithumb.txt") as f:
             lines = f.readlines()
@@ -89,17 +91,18 @@ class MainWindow(QMainWindow, form_class):
 
             self.button.setText("매매중지")
             self.textEdit.append("------ START ------")
-            self.textEdit.append(f"보유 코인 : {self.ticker} - {self.balance[0]} EA")
+            self.textEdit.append(f"보유 현금 : {self.balance[2]} 원")
 
             self.vw = VolatilityWorker(self.ticker, self.bithumb)
-            self.vw.tradingSent.connect(self.ReceivetradingSignal)
+            self.vw.tradingSent.connect(self.receiveTradingSignal)
             self.vw.start()
         else:
+            self.vw.close()
             self.textEdit.append("------- END -------")
             self.button.setText("매매시작")
 
-    def ReceivetradingSignal(self, data):
-        self.textEdit.append(f"{data[0]} : ")
+    def receiveTradingSignal(self, time, type, amount):
+        self.textEdit.append(f"[{time}] {type} : {amount}")
 
 
 if __name__ == "__main__":

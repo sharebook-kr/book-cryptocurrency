@@ -8,6 +8,7 @@ class MainWindow(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Home Trading System")
 
     # ----------------- 추 가 ------------------
         self.button.clicked.connect(self.clickBtn)

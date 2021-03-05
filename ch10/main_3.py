@@ -13,6 +13,7 @@ class MainWindow(QMainWindow, form_class):
         self.setupUi(self)
         self.ticker = "BTC"
         self.button.clicked.connect(self.clickBtn)
+        self.setWindowTitle("Home Trading System")
 
         # ----------------- 추 가 ------------------
         with open("bithumb.txt") as f:
@@ -39,7 +40,7 @@ class MainWindow(QMainWindow, form_class):
 
             self.button.setText("매매중지")
             self.textEdit.append("------ START ------")
-            self.textEdit.append(f"보유 코인 : {self.ticker} - {self.balance[0]} EA")
+            self.textEdit.append(f"보유 현금 : {self.balance[2]} 원")
         else:
             self.textEdit.append("------- END -------")
             self.button.setText("매매시작")
