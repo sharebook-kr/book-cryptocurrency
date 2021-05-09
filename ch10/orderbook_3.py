@@ -72,10 +72,13 @@ class OrderbookWidget(QWidget):
 
     def updateData(self, data):
         # ----------------- 수 정 ------------------
-        tradingValues = [ ]
+        tradingBidValues = [ ]
         for v in data['bids']:
-            tradingValues.append(int(v['price'] * v['quantity']))
-        maxtradingValue = max(tradingValues)
+            tradingBidValues.append(int(v['price'] * v['quantity']))
+        tradingAskValues = [ ]
+        for v in data['asks'][::-1]:
+            tradingAskValues.append(int(v['price'] * v['quantity']))
+        maxtradingValue = max(tradingBidValues + tradingAskValues)
 
         for i, v in enumerate(data['asks'][::-1]):
             item_0 = self.tableAsks.item(i, 0)
@@ -84,8 +87,8 @@ class OrderbookWidget(QWidget):
             item_1.setText(f"{v['quantity']:,}")
             item_2 = self.tableAsks.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
-            item_2.setFormat(f"{tradingValues[i]:,}")
-            item_2.setValue(tradingValues[i])
+            item_2.setFormat(f"{tradingAskValues[i]:,}")
+            item_2.setValue(tradingAskValues[i])
 
         for i, v in enumerate(data['bids']):
             item_0 = self.tableBids.item(i, 0)
@@ -94,8 +97,8 @@ class OrderbookWidget(QWidget):
             item_1.setText(f"{v['quantity']:,}")
             item_2 = self.tableBids.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
-            item_2.setFormat(f"{tradingValues[i]:,}")
-            item_2.setValue(tradingValues[i])
+            item_2.setFormat(f"{tradingBidValues[i]:,}")
+            item_2.setValue(tradingBidValues[i])
         # ------------------------------------------
 
     def closeEvent(self, event):

@@ -47,8 +47,8 @@ class OrderbookWidget(QWidget):
             item_2 = QProgressBar(self.tableAsks)
             item_2.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             item_2.setStyleSheet("""
-                QProgressBar {background-color : rgba(0, 0, 0, 0%);border : 1}
-                QProgressBar::Chunk {background-color : rgba(255, 0, 0, 50%);border : 1}
+                QProgressBar {background-color : rgba(0, 0, 0, 0);border : 0}
+                QProgressBar::Chunk {background-color : rgba(255, 0, 0, 0.5);border : 0}
             """)
             self.tableAsks.setCellWidget(i, 2, item_2)
             anim = QPropertyAnimation(item_2, b"value")
@@ -67,12 +67,13 @@ class OrderbookWidget(QWidget):
             item_2 = QProgressBar(self.tableBids)
             item_2.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             item_2.setStyleSheet("""
-                QProgressBar {background-color : rgba(0, 0, 0, 0%);border : 1}
-                QProgressBar::Chunk {background-color : rgba(0, 255, 0, 40%);border : 1}
+                QProgressBar {background-color : rgba(0, 0, 0, 0);border : 1}
+                QProgressBar::Chunk {background-color : rgba(0, 255, 0, 0.4);border : 1}
             """)
             self.tableBids.setCellWidget(i, 2, item_2)
             anim = QPropertyAnimation(item_2, b"value")
             anim.setDuration(200)
+            anim.setStartValue(0)
             self.bidsAnim.append(anim)
 
         self.ow = OrderbookWorker(self.ticker)
@@ -80,10 +81,13 @@ class OrderbookWidget(QWidget):
         self.ow.start()
 
     def updateData(self, data):
-        tradingValues = [ ]
+        tradingBidValues = [ ]
         for v in data['bids']:
-            tradingValues.append(int(v['price'] * v['quantity']))
-        maxtradingValue = max(tradingValues)
+            tradingBidValues.append(int(v['price'] * v['quantity']))
+        tradingAskValues = [ ]
+        for v in data['asks'][::-1]:
+            tradingAskValues.append(int(v['price'] * v['quantity']))
+        maxtradingValue = max(tradingBidValues + tradingAskValues)
 
         for i, v in enumerate(data['asks'][::-1]):
             item_0 = self.tableAsks.item(i, 0)
@@ -92,9 +96,9 @@ class OrderbookWidget(QWidget):
             item_1.setText(f"{v['quantity']:,}")
             item_2 = self.tableAsks.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
-            item_2.setFormat(f"{tradingValues[i]:,}")
+            item_2.setFormat(f"{tradingAskValues[i]:,}")
             self.asksAnim[i].setStartValue(item_2.value() if item_2.value() > 0 else 0)
-            self.asksAnim[i].setEndValue(tradingValues[i])
+            self.asksAnim[i].setEndValue(tradingAskValues[i])
             self.asksAnim[i].start()
 
         for i, v in enumerate(data['bids']):
@@ -104,9 +108,9 @@ class OrderbookWidget(QWidget):
             item_1.setText(f"{v['quantity']:,}")
             item_2 = self.tableBids.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
-            item_2.setFormat(f"{tradingValues[i]:,}")
-            self.bidsAnim[i].setStartValue(item_2.value() if item_2.value() > 0 else 0)
-            self.bidsAnim[i].setEndValue(tradingValues[i])
+            item_2.setFormat(f"{tradingBidValues[i]:,}")
+            self.bidsAnim[i].setStartValue(item_2.value())
+            self.bidsAnim[i].setEndValue(tradingBidValues[i])
             self.bidsAnim[i].start()
 
 

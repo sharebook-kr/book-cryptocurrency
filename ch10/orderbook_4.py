@@ -87,10 +87,13 @@ class OrderbookWidget(QWidget):
         self.ow.start()
 
     def updateData(self, data):
-        tradingValues = [ ]
+        tradingBidValues = [ ]
         for v in data['bids']:
-            tradingValues.append(int(v['price'] * v['quantity']))
-        maxtradingValue = max(tradingValues)
+            tradingBidValues.append(int(v['price'] * v['quantity']))
+        tradingAskValues = [ ]
+        for v in data['asks'][::-1]:
+            tradingAskValues.append(int(v['price'] * v['quantity']))
+        maxtradingValue = max(tradingBidValues + tradingAskValues)
 
         for i, v in enumerate(data['asks'][::-1]):
             item_0 = self.tableAsks.item(i, 0)
@@ -99,11 +102,11 @@ class OrderbookWidget(QWidget):
             item_1.setText(f"{v['quantity']:,}")
             item_2 = self.tableAsks.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
-            item_2.setFormat(f"{tradingValues[i]:,}")
-            # item_2.setValue(tradingValues[i])
+            item_2.setFormat(f"{tradingAskValues[i]:,}")
+            # item_2.setValue(tradingAskValues[i])
             # ----------------- 추 가 ------------------
             self.asksAnim[i].setStartValue(item_2.value() if item_2.value() > 0 else 0)
-            self.asksAnim[i].setEndValue(tradingValues[i])
+            self.asksAnim[i].setEndValue(tradingAskValues[i])
             self.asksAnim[i].start()
             # ------------------------------------------
 
@@ -114,11 +117,11 @@ class OrderbookWidget(QWidget):
             item_1.setText(f"{v['quantity']:,}")
             item_2 = self.tableBids.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
-            item_2.setFormat(f"{tradingValues[i]:,}")
-            # item_2.setValue(tradingValues[i])
+            item_2.setFormat(f"{tradingBidValues[i]:,}")
+            # item_2.setValue(tradingBidValues[i])
             # ----------------- 추 가 ------------------
             self.bidsAnim[i].setStartValue(item_2.value() if item_2.value() > 0 else 0)
-            self.bidsAnim[i].setEndValue(tradingValues[i])
+            self.bidsAnim[i].setEndValue(tradingBidValues[i])
             self.bidsAnim[i].start()
             # ------------------------------------------
 
