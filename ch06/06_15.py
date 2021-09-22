@@ -6,7 +6,7 @@ mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
 
 while True:
     now = datetime.datetime.now()
-    if mid < now < mid + datetime.delta(seconds=10) : 
+    if mid < now < mid + datetime.timedelta(seconds=10) : 
         print("정각입니다")
         mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
 
