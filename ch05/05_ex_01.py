@@ -5,5 +5,5 @@ tickers = pybithumb.get_tickers()
 
 for ticker in tickers:
     prices = all[ticker]
-    rate24 = prices['24H_fluctate_rate']
+    rate24 = prices['fluctate_rate_24H']
     print(ticker, rate24)
