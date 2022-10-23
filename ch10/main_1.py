@@ -11,6 +11,7 @@ class MainWindow(QMainWindow, form_class):
         self.setWindowTitle("Home Trading System")
 
     # ----------------- 추 가 ------------------
+        self.ticker = "BTC"           # 추후 사용
         self.button.clicked.connect(self.clickBtn)
 
     def clickBtn(self):
